@@ -1,0 +1,1 @@
+alert tcp any any -> any !22 (msg:"SSH to non-standard port"; flow:to_server; app-layer-protocol:ssh; sid:1000001; rev:1;)

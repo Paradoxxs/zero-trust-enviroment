@@ -1,0 +1,2 @@
+alert tcp any any -> any !22 (msg:"SSH Connection Detected non standard port"; flow:established,to_server; content:"SSH-"; depth:4; sid:1000001; rev:1;)
+alert tcp any any -> any !22 (msg:"SURICATA SSH non-standard port"; flow:to_server; app-layerprotocol:ssh; sid:5300001; rev:1;)

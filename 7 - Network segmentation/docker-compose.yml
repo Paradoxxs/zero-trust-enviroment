@@ -1,0 +1,75 @@
+services:
+
+
+  juice:
+    image: bkimminich/juice-shop
+    container_name: webapp
+    ports:
+      - 8080:3000
+    networks:
+      - dmz
+
+  bottle-filling_plc: 
+      image: paradoxxs/virtuaplant:plc
+      container_name: bottle-filling_plc
+      ports:
+        - 5020:5020
+        - 3001:3000
+      networks:
+        - Production
+
+
+  bottle-filling_hmi:
+      image: paradoxxs/virtuaplant:hmi
+      container_name: bottle-filling_hmi
+      environment:
+        - PLC_SERVER_IP=bottle-filling_plc
+        - PLC_SERVER_PORT=5020
+      ports:
+        - 3002:3000
+      depends_on:
+        - bottle-filling_plc
+      networks:
+        - Production
+
+  vuln_samba:
+    image: vulhub/samba:4.6.3
+    container_name: samba
+    tty: true
+    volumes:
+    - ./samba/smb.conf:/usr/local/samba/etc/smb.conf
+    - ./samba/data:/storage
+    ports:
+    - "4450:445"
+    networks:
+      - corperation
+
+
+  postgres:
+    image: vulhub/postgres:10.7
+    container_name: postgres
+    ports:
+    - "5432:5432"
+    environment:
+    - POSTGRES_PASSWORD=postgres
+    networks:
+      - corperation
+
+  endpoint:
+    image: paradoxxs/ciso:endpoint
+    networks:
+      - corperation
+
+  endpoint2:
+    image: paradoxxs/ciso:user
+    networks:
+      - corperation
+
+networks:
+  dmz:
+    name: dmz
+  Production:
+    name: Production
+  corperation:
+    name: corperation
+
